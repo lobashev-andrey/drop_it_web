@@ -28,7 +28,7 @@ public class BookService {
         bookRepo.store(book);
     }
 
-    public boolean remove BookById(String bookIdToRemove) {
+    public boolean removeBookById(String bookIdToRemove) {
         return bookRepo.removeItemById(bookIdToRemove);
     }
 
