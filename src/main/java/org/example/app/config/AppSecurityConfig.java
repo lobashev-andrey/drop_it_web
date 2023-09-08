@@ -45,7 +45,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()         // предоставляем нашу собственную форму логина
                 .loginPage("/login") // на нашей собственной странице логина
                 .loginProcessingUrl("/login/auth")// процесс, который обрабатывает аутентификацию
-                .defaultSuccessUrl("/books/shelf") // страница по умолчанию при успехе
+                .defaultSuccessUrl("/books/shelf", true) // страница по умолчанию при успехе
                 .failureUrl("/login"); // при неуспехе
     }
 
