@@ -1,18 +1,17 @@
 package org.example.web.controllers;
 
 import org.apache.log4j.Logger;
+import org.example.app.exceptions.FileIsEmptyException;
 import org.example.app.services.BookService;
 import org.example.web.dto.Book;
 import org.example.web.dto.BookIdToRemove;
+import org.example.web.dto.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -41,6 +40,8 @@ public class BookShelfController {
         model.addAttribute("book", new Book());
         model.addAttribute("bookIdToRemove", new BookIdToRemove());
         model.addAttribute("bookList", bookService.getAllBooks());
+        model.addAttribute("removeNote", new Notification(""));
+        model.addAttribute("emptyFileNote", new Notification(""));
         return "book_shelf";
     }
 
@@ -50,6 +51,8 @@ public class BookShelfController {
             model.addAttribute("book", book);
             model.addAttribute("bookIdToRemove", new BookIdToRemove());
             model.addAttribute("bookList", bookService.getAllBooks());
+            model.addAttribute("removeNote", new Notification(""));
+            model.addAttribute("emptyFileNote", new Notification(""));
             return "book_shelf";
         } else {
             bookService.saveBook(book);
@@ -63,21 +66,37 @@ public class BookShelfController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("book", new Book());
+            model.addAttribute("bookIdToRemove", new BookIdToRemove());
             model.addAttribute("bookList", bookService.getAllBooks());
+            model.addAttribute("removeNote", new Notification("enter book id (positive diigit to 7 signs)"));
+            model.addAttribute("emptyFileNote", new Notification(""));
+            System.out.println("11111111111111111");
             return "book_shelf";
-        } else {
-            bookService.removeBookById(bookIdToRemove.getId());
-             return "redirect:/books/shelf";
         }
+        if (bookService.removeBookById(bookIdToRemove.getId())){
+            System.out.println("222222222222222222");
+             return "redirect:/books/shelf";
+        } else {
+            model.addAttribute("book", new Book());
+            model.addAttribute("bookIdToRemove", new BookIdToRemove());
+            model.addAttribute("bookList", bookService.getAllBooks());
+            model.addAttribute("removeNote", new Notification("id not found"));
+            model.addAttribute("emptyFileNote", new Notification(""));
+            System.out.println("33333333333333333333333333");
+            return "book_shelf";
+        }
+
     }
 
     @PostMapping("/uploadFile")
     public String uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
+        if(file.isEmpty()){
+            throw new FileIsEmptyException("you chose no one file");
+        }
         String name = file.getOriginalFilename(); // имя с расширением
         byte[] bytes = file.getBytes();  // сохраняем сам файл в виде байтов
         // теперь создаем - программно -
-        // каталог в домашней директории сервера
-        // на случай если его нет или он был удален
+        // каталог в домашней директории сервера на случай если его нет или он был удален
         String rootPath = System.getProperty("catalina.home"); // задаем путь до папки сервера
         File dir = new File(rootPath + File.separator + "external_uploads"); // имя папки - путь + имя
         if(!dir.exists()){
@@ -92,6 +111,19 @@ public class BookShelfController {
         logger.info("new file saved at: " + servletFile.getAbsolutePath());
 
         return "redirect:/books/shelf";
+    }
+
+    @ExceptionHandler(FileIsEmptyException.class)
+    public String emptyFileErrorHandler(Model model, FileIsEmptyException exception){
+
+        System.out.println("@EXCEPTION HANDLER emptyFileErrorHandler");
+
+        model.addAttribute("book", new Book());
+        model.addAttribute("bookIdToRemove", new BookIdToRemove());
+        model.addAttribute("bookList", bookService.getAllBooks());
+        model.addAttribute("removeNote", new Notification(""));
+        model.addAttribute("emptyFileNote", new Notification(exception.getMessage()));
+        return "book_shelf";
     }
 
 

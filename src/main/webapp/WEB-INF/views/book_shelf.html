@@ -36,13 +36,15 @@
             <tr>
                 <td>
                     <input type="text" placeholder="author" th:field="*{author}">
+                    <p th:if="${#fields.hasErrors()}">field mustn't be empty      ......................</p>
                 </td>
                 <td>
                     <input type="text" placeholder="book_title" th:field="*{title}">
+                    <p th:if="${#fields.hasErrors()}">field mustn't be empty      ......................</p>
                 </td>
                 <td>
                     <input type="text" placeholder="size (pages)" th:field="*{size}">
-                    <p th:if="${#fields.hasErrors()}">field value must be digit and less than 5 signs</p>
+                    <p th:if="${#fields.hasErrors()}">field value must be positive digit and less than 5 signs</p>
                 </td>
                 <td>
                     <input type="submit" value="save">
@@ -62,8 +64,9 @@
                     <input type="submit" value="remove">
                 </td>
                 <td th:if="${#fields.hasErrors()}">
-                    <p>Wrong id or not found</p>
+                    <p>field value must be positive digit</p>
                 </td>
+                <td th:text="${removeNote.getText()}">some text</td>
             </tr>
         </table>
     </form>
@@ -78,6 +81,7 @@
                 <td>
                     <input type="submit" value="Upload">
                 </td>
+                <td th:text="${emptyFileNote.getText()}">some text</td>
             </tr>
         </table>
     </form>

@@ -1,12 +1,20 @@
 package org.example.web.dto;
 
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
 
 public class Book {
     private Integer id;
+
+    @Pattern(regexp = "[A-z]+")
     private String author;
+
+    @Pattern(regexp = "[A-z]+")
     private String title;
 
+    @Positive
     @Digits(integer = 4, fraction = 0)
     private Integer size;
 
