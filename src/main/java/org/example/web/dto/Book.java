@@ -8,10 +8,10 @@ import javax.validation.constraints.Positive;
 public class Book {
     private Integer id;
 
-    @Pattern(regexp = "[A-z]+")
+    @Pattern(regexp = "[A-Za-z'-]+[A-Za-z' -]*")
     private String author;
 
-    @Pattern(regexp = "[A-z]+")
+    @Pattern(regexp = "[A-Za-z'-]+[A-Za-z' -]*")
     private String title;
 
     @Positive

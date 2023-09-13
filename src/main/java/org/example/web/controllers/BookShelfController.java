@@ -19,6 +19,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 @RequestMapping(value = "/books")
@@ -68,7 +70,7 @@ public class BookShelfController {
             model.addAttribute("book", new Book());
             model.addAttribute("bookIdToRemove", new BookIdToRemove());
             model.addAttribute("bookList", bookService.getAllBooks());
-            model.addAttribute("removeNote", new Notification("enter book id (positive diigit to 7 signs)"));
+            model.addAttribute("removeNote", new Notification("enter book id (positive digit to 7 signs)"));
             model.addAttribute("emptyFileNote", new Notification(""));
             System.out.println("11111111111111111");
             return "book_shelf";
@@ -85,7 +87,19 @@ public class BookShelfController {
             System.out.println("33333333333333333333333333");
             return "book_shelf";
         }
+    }
 
+    @PostMapping("/removeByRegex")
+    public String removeByRegex(@RequestParam(value = "queryRegex") String queryRegex){
+        Pattern p = Pattern.compile("[A-Za-z'-]+[A-Za-z' -]*|[0-9]{1,4}");
+        Matcher m = p.matcher(queryRegex);
+        if(queryRegex.equals("") || !m.replaceAll("").equals("")){
+            System.out.println( "return: regex_fail_page");
+            return "regex_fail_page";
+        }
+
+        bookService.removeBookByRegex(queryRegex);
+        return "redirect:/books/shelf";
     }
 
     @PostMapping("/uploadFile")

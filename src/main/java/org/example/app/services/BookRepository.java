@@ -67,6 +67,28 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
     }
 
     @Override
+    public boolean removeItemByRegex(String queryRegex) {
+
+
+        String booksWithRegex = "";
+        int removedBooksNumber = 0;
+        for(Book book: retrieveAll()){
+            if (book.getAuthor().contains(queryRegex)
+                    || book.getTitle().contains(queryRegex)
+                    || String.valueOf(book.getSize()).equals(queryRegex)) {
+                booksWithRegex += ("\n\t" + book);
+                removedBooksNumber++;
+                removeItemById(book.getId());
+            }
+        }
+        if(removedBooksNumber == 0) return false;
+
+        logger.info("removed books: " + booksWithRegex +
+                "\n\ttotal: " + removedBooksNumber);
+        return true;
+    }
+
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
     }
